@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .logo {
+            position: absolute;
+            width: 300px;
+            height: auto;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: rgba(2, 2, 98, 0.906);
+            margin: 0;
+        }
+
+        form {
+            border: 3px solid white;
+            border-radius: 10px;
+            width: 700px;
+            position: absolute;
+            top: 200px;
+            left: 600px;
+            background-color: white;
+        }
+
+        input[type=text],
+        input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: rgba(255, 89, 116, 0.838);
+            color: black;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .imgcontainer {
+            text-align: center;
+            margin: 24px 0 12px 0;
+        }
+
+        img.avatar {
+            width: 20%;
+            border-radius: 20%;
+            size: 50px;
+        }
+
+        .container {
+            padding: 16px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <img src="../images/logo-white-transparent.png" alt="Logo" class="logo">
+
+    <form action="" method="post">
+        <div class="imgcontainer">
+            <img src="../images/profileicon.png" alt="Avatar" class="avatar">
+        </div>
+
+        <div class="container">
+            <label for="uname"><b>Username</b></label>
+            <input type="text" placeholder="Enter Username" id="uname" required>
+
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" id="psw" required>
+
+            <label for="email"><b>Email</b></label>
+            <input type="text" placeholder="Enter Email" id="email" required>
+
+            <label for="dob"><b>Date of Birth</b></label>
+            <br>
+            <input type="date" placeholder="Enter Date" name="date" required>
+
+            <button id="signUp" type="submit" ">Sign Up</button>
+        </div>
+
+        <div class=" container">
+                <p>Already have an account? Click here to <a href="login_page.html">login</a>.</p>
+
+        </div>
+    </form>
+
+</body>
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDC9Am3C4GzmMz6htqNIgrR5yuMdFfiibE",
+        authDomain: "online-film-club.firebaseapp.com",
+        databaseURL: "https://online-film-club-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "online-film-club",
+        storageBucket: "online-film-club.appspot.com",
+        messagingSenderId: "430279427350",
+        appId: "1:430279427350:web:d92b85b41a79bf11fa3c37"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth();
+
+    const signUp = document.getElementById('signUp');
+
+    signUp.addEventListener('click', (e) => {
+        e.preventDefault();
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('psw').value;
+        var username = document.getElementById('uname').value;
+
+        createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
+            const user = userCredential.user;
+
+            set(ref(database, 'users/' + user.uid), {
+                username: username,
+                email: email
+            })
+            alert('user created');
+        })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+
+                alert('errorMessage');
+            });
+    });
+</script>
+
+</html>
