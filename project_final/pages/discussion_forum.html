@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html ng-app="discussionApp">
+
+<head>
+    <style>
+        body {
+            background-color: rgba(2, 2, 98, 0.906);
+            margin: 0;
+        }
+
+        .banner {
+            background-color: rgb(106, 0, 106);
+            width: 100%;
+            height: 80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        .login {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .login-icon {
+            font-family: "Font Awesome";
+            font-size: 40px;
+            margin-right: 10px;
+            margin-left: 20px;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+        }
+
+        .box {
+            background-color: rgb(182, 170, 205);
+            width: 92%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            margin-left: 50px;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .pink-button {
+            background-color: rgba(255, 89, 116, 0.838);
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 50px;
+        }
+
+        .discussion-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            width: 100%;
+            max-width: 920px;
+            margin: 0 30px;
+        }
+
+        .discussion-item {
+            width: 100%;
+            background-color: #8982A7;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .discussion-item h3 {
+            margin-top: 0;
+        }
+
+        .discussion-item p {
+            margin-bottom: 5px;
+        }
+
+        .discussion-item button {
+            background-color: #f79f9f;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .discussion-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .new-discussion-form {
+            margin-top: 10px;
+        }
+
+        .new-discussion-form input[type="text"],
+        .new-discussion-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        .new-discussion-form button {
+            background-color: rgba(255, 89, 116, 0.838);
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 40px;
+        }
+
+        .new-discussion-form button:hover {
+            background-color: #f58c9c;
+        }
+
+        .center-text {
+            flex-grow: 1;
+            text-align: center;
+            margin-right: 130px;
+        }
+
+        .logout-icon {
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        .logout-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+            text-decoration: none;
+        }
+
+        #profile {
+            width: 50px;
+            height: 50px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .box {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .center-text {
+                margin-right: 0;
+            }
+
+            .discussion-container {
+                padding: 10px;
+            }
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+
+<body>
+    <div class="banner">
+        <div class="login">
+            <a href="profile_page.html" style="color: white;">
+                <i class="fas fa-user login-icon"></i>
+            </a>
+            <span class="welcome-text" id="welcome">Welcome User!</span>
+            <a href="online_film_club.html" class="logout-button">
+                <img src="../images/logout1.png" alt="Logout" class="logout-icon">
+            </a>
+        </div>
+        <img src="../images/logo-white-transparent.png" alt="Logo" class="logo">
+    </div>
+
+    <div class="button-container">
+        <a href="monthly_film.html"><button class="pink-button">MONTHLY PICK</button></a>
+        <div class="center-text">
+            <h1>Discussion Forum</h1>
+        </div>
+    </div>
+
+    <div class="box" ng-controller="DiscussionController">
+        <div class="discussion-container">
+            <!-- Display existing discussions -->
+            <div class="discussion-item" ng-repeat="discussion in discussions">
+                <div style="display: flex; align-items: center;">
+                    <img ng-src="{{ discussion.Picture }}" alt="Profile Picture" id="profile">
+                    <h3>{{ discussion.Title }}</h3>
+                </div>
+                <p>{{ discussion.Details }}</p>
+                <button ng-click="replyToDiscussion(discussion)">Reply</button>
+                <p>Posted by: {{ discussion.Name }}</p>
+            </div>
+        </div>
+
+        <div class="new-discussion-form" ng-if="showForm">
+        <!-- Form to start a new discussion -->
+            <h3>New Discussion</h3>
+            <input type="text" placeholder="Title" ng-model="$parent.newDiscussionTitle">
+            <textarea placeholder="Details" ng-model="$parent.newDiscussionDetails"></textarea>
+            <button ng-click="postDiscussion()">Post</button>
+        </div>
+
+        <!-- Move the button inside the ng-controller div -->
+        <button class="pink-button" ng-click="openForm()">Start New Discussion</button>
+    </div>
+
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, set, ref, update, get, child, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDC9Am3C4GzmMz6htqNIgrR5yuMdFfiibE",
+            authDomain: "online-film-club.firebaseapp.com",
+            databaseURL: "https://online-film-club-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "online-film-club",
+            storageBucket: "online-film-club.appspot.com",
+            messagingSenderId: "430279427350",
+            appId: "1:430279427350:web:d92b85b41a79bf11fa3c37"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+
+        var username;
+        var profilePic;
+
+        function getName() {
+            // Get the movie details from Firebase
+            const uid = sessionStorage.getItem('uid');
+            if (uid) {
+                console.log(uid);
+            }
+
+            get(ref(database, `users/${uid}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const user = snapshot.val();
+                    const name = document.getElementById('welcome');
+                    name.textContent = "Welcome " + user.username + "!";
+                    username = user.username;
+                    profilePic = user.profileUrl;
+                }
+            });
+        }
+
+        getName();
+
+        // AngularJS app and controller
+        angular.module('discussionApp', [])
+            .controller('DiscussionController', ['$scope', function ($scope) {
+                // Initialize an empty array to store the discussions
+                $scope.discussions = [];
+
+                // Function to handle opening the form
+                $scope.openForm = function () {
+                    $scope.showForm = true; // Set showForm flag to true to display the form
+                };
+
+                $scope.replyToDiscussion = function (discussion) {
+                    // Save the selected discussion in session storage
+                    sessionStorage.setItem('selectedDiscussion', JSON.stringify(discussion));
+
+                    // Redirect to the reply page
+                    window.location.href = 'reply_page.html';
+                };
+
+                // Function to handle posting a new discussion
+                $scope.postDiscussion = function () {
+                    // Create a new discussion object with the provided title and details
+
+                    var title = $scope.newDiscussionTitle;
+                    var details = $scope.newDiscussionDetails;
+
+                    set(ref(database, "forum/" + title), {
+                        Title: title,
+                        Details: details,
+                        Name: username,
+                        Picture: profilePic
+                    });
+
+                    // Reset the form inputs
+                    $scope.newDiscussionTitle = '';
+                    $scope.newDiscussionDetails = '';
+
+                    // Hide the form
+                    $scope.showForm = false;
+                    fetchDiscussions();
+                };
+
+                // Function to fetch and display all forum discussions
+                function fetchDiscussions() {
+                    var dbRef = ref(database);
+                    var discussionRef = child(dbRef, "forum");
+
+                    get(discussionRef).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const discussionsArr = [];
+                            snapshot.forEach((childSnapshot) => {
+                                const discussionsObj = childSnapshot.val();
+                                discussionsArr.push(discussionsObj);
+                            });
+
+                            // Update the discussions array in the scope
+                            $scope.discussions = discussionsArr;
+
+                            // Trigger AngularJS digest cycle to update the view
+                            $scope.$apply();
+                        }
+
+                    })
+
+                }
+
+                // Call the fetchDiscussions function to initially load the discussions
+                fetchDiscussions();
+            }]);
+    </script>
+
+</body>
+
+</html>

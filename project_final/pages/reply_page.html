@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html ng-app="replyApp">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reply Comment</title>
+
+    <style>
+        body {
+            background-color: rgba(2, 2, 98, 0.906);
+            margin: 0;
+        }
+
+        .banner {
+            background-color: rgb(106, 0, 106);
+            width: 100%;
+            height: 80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        .login {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .login-icon {
+            font-family: "Font Awesome";
+            font-size: 40px;
+            margin-right: 10px;
+        }
+
+        .box {
+            background-color: rgb(182, 170, 205);
+            width: 92%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-top: 10px;
+            margin-left: 30px;
+            padding: 0 20px;
+            color: white;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .logout-icon {
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        .container {
+            display: flex;
+            margin-left: 45%;
+            margin-top: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+        }
+
+        #profile {
+            width: 100px;
+            height: 100px;
+        }
+
+        #profile-comment {
+            width: 50px;
+            height: 50px;
+        }
+
+        button{
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            color: black;
+            margin: 4px 2px;
+            padding: 10px 10px;
+            background-color: rgba(255, 89, 116, 0.838);
+            border: none;
+            border-radius: 50px;
+        }
+
+        .reply-form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+
+        .reply-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        .reply-form button {
+            background-color: rgba(255, 89, 116, 0.838);
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .comment-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            width: 100%;
+            max-width: 920px;
+            margin-top: 20px;
+        }
+
+        .comment-item {
+            width: 100%;
+            background-color: #8982A7;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .comment-item p {
+            margin: 0;
+            margin-bottom: 5px;
+        }
+
+        .comment-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+
+            .box {
+                width: 100%;
+                padding: 10px;
+            }
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+
+<body>
+
+    <div class="banner">
+        <div class="login">
+            <a href="profile_page.html" style="color: white;">
+            <i class="fas fa-user login-icon"></i>
+            </a>
+            <span class="welcome-text" id="welcome">Welcome User!</span>
+            <a href="../pages/online_film_club.html" class="logout-button">
+                <img src="../images/logout1.png" alt="Logout" class="logout-icon">
+            </a>
+        </div>
+        <img src="../images/logo-white-transparent.png" alt="Logo" class="logo">
+    </div>
+
+    <div class="container">
+        <h1>Reply Comment</h1>
+    </div>
+
+    <div class="box">
+        <div ng-controller="ReplyController">
+            <h1>Reply to Discussion</h1>
+
+            <div class="comment-item">
+                <h3>{{ selectedDiscussion.Title }}</h3>
+                <p>{{ selectedDiscussion.Details }}</p>
+                <p>Posted by: {{ selectedDiscussion.Name }}</p>
+                <img ng-src="{{ selectedDiscussion.Picture }}" alt="Profile Picture" id="profile">
+            </div>
+
+            <div class="comment-container">
+                <div class="comment-item" ng-repeat="comment in comments">
+                    <p>{{ comment.Comment }}</p>
+                    <p>Comment by: {{ comment.Name }}</p>
+                    <img ng-src="{{ comment.Picture }}" alt="Profile Picture" id="profile-comment">
+                </div>
+            </div>
+
+            <div class="reply-form">
+                <textarea ng-model="replyText" placeholder="Enter your comment"></textarea>
+                <button ng-click="postReply()">Comment</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, set, ref, update, get, child, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDC9Am3C4GzmMz6htqNIgrR5yuMdFfiibE",
+            authDomain: "online-film-club.firebaseapp.com",
+            databaseURL: "https://online-film-club-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "online-film-club",
+            storageBucket: "online-film-club.appspot.com",
+            messagingSenderId: "430279427350",
+            appId: "1:430279427350:web:d92b85b41a79bf11fa3c37"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+
+        var username;
+        var profilePic;
+
+        function getName() {
+            // Get the movie details from Firebase
+            const uid = sessionStorage.getItem('uid');
+            if (uid) {
+                console.log(uid);
+            }
+
+            get(ref(database, `users/${uid}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const user = snapshot.val();
+                    const name = document.getElementById('welcome');
+                    name.textContent = "Welcome " + user.username + "!";
+                    username = user.username;
+                    profilePic = user.profileUrl;
+                }
+            });
+        }
+
+        getName();
+
+        // AngularJS app and controller for the reply page
+        angular.module('replyApp', [])
+            .controller('ReplyController', ['$scope', '$window', function ($scope, $window) {
+                // Retrieve the selected discussion from session storage
+                var selectedDiscussion = sessionStorage.getItem('selectedDiscussion');
+                $scope.selectedDiscussion = JSON.parse(selectedDiscussion);
+                var title = $scope.selectedDiscussion.Title;
+                // Function to handle posting a reply
+                $scope.postReply = function () {
+                    var replyText = $scope.replyText;
+                    const dt = new Date().toISOString();
+                    const commentId = dt.replace(/[-:.]/g, '');
+                    // Implement your logic to handle posting the reply
+                    // You can access the selected discussion and reply text
+                    const forumRefPath = `forum/${title}/Comments/${commentId}`;
+                    // to perform any necessary actions, such as updating the database
+                    set(ref(database, forumRefPath), {
+                        Name: username,
+                        Picture: profilePic,
+                        Comment: replyText,
+                        Timestamp: dt
+                    });
+
+                    // Reset the reply text input
+                    $scope.replyText = '';
+                    fetchComments();
+                };
+
+                // Function to fetch and display all forum comment
+                function fetchComments() {
+                    var dbRef = ref(database);
+                    var commentRef = child(dbRef, `forum/${title}/Comments`);
+
+                    get(commentRef).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const commentArr = [];
+                            snapshot.forEach((childSnapshot) => {
+                                const commentObj = childSnapshot.val();
+                                commentArr.push(commentObj);
+                            });
+
+                            // Update the discussions array in the scope
+                            $scope.comments = commentArr;
+
+                            // Trigger AngularJS digest cycle to update the view
+                            $scope.$apply();
+                        }
+
+                    })
+
+                }
+
+                // Call the fetchDiscussions function to initially load the discussions
+                fetchComments();
+            }]);
+    </script>
+</body>
+
+</html>

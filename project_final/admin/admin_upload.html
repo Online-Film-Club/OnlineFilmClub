@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save & Load Image on Firebase Storage</title>
+
+    <style>
+        body {
+            background-color: rgba(2, 2, 98, 0.906);
+            margin: 0;
+        }
+
+        .banner {
+            background-color: rgb(106, 0, 106);
+            width: 100%;
+            height: 80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        .login {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .login-icon {
+            font-family: "Font Awesome";
+            font-size: 40px;
+            margin-right: 10px;
+        }
+
+        .box {
+            background-color: rgb(182, 170, 205);
+            width: 92%;
+            height: 100%;
+            position: relative;
+            margin-top: 10px;
+            margin-left: 30px;
+            padding: 20px;
+            color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .logout-icon {
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        #myimg {
+            height: 200px;
+            width: 200px;
+            color: solid black 2px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            margin-right: 20%;
+            flex-grow: 1;
+        }
+
+        button{
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+            color: black;
+            margin: 8px auto;
+            padding: 10px 20px;
+            background-color: rgba(255, 89, 116, 0.838);
+            border: none;
+            border-radius: 50px;
+            width: 20%;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            word-wrap: break-word;
+        }
+
+        select {
+            padding: 8px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #backBtn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        #backBtn:focus {
+            outline: none;
+        }
+
+        .upload {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+        }
+
+        .form-field label {
+            font-weight: bold;
+        }
+
+        @media screen and (max-width: 768px) {
+            /* Apply responsive styles for screens with a maximum width of 768px */
+            .box {
+                height: auto;
+            }
+
+            #myimg {
+                margin-bottom: 10px;
+            }
+        }
+
+
+        
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="banner">
+        <div class="login">
+            <a href="profile_page.html" style="color: white;">
+            <i class="fas fa-user login-icon"></i>
+            </a>
+            <span class="welcome-text" id="welcome">Welcome Admin!</span>
+            <a href="../pages/online_film_club.html" class="logout-button">
+                <img src="../images/logout1.png" alt="Logout" class="logout-icon">
+            </a>
+        </div>
+        <img src="../images/logo-white-transparent.png" alt="Logo" class="logo">
+    </div>
+
+    <div class="container">
+        <button id="backBtn"><i class="fas fa-arrow-left"></i></button>
+        <h1>Upload Movie</h1>
+    </div>
+
+    <div class="box">
+        <div class="upload">
+            <div class="form-field">
+                <label>Image Name : </label> <input type="text" id="namebox"><label id="extlab"></label><br><br>
+                <img id="myimg"> <label id="upprogress"></label>
+            </div>
+            <div class="form-field">
+                <label for="movieName">Movie Title</label>
+                <input type="text" id="movieName" placeholder="Enter movie title" required>
+            </div>
+            <div class="form-field">
+                <label for="description">Description</label>
+                <textarea id="description" rows="4" placeholder="Enter movie description" required></textarea>
+            </div>
+
+            <div class="form-field">
+                <label for="rating">Rating</label>
+                <select id="rating">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <button id="selbtn">Select Image</button>
+                <button id="upbtn">Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, set, ref, update, get, child, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDC9Am3C4GzmMz6htqNIgrR5yuMdFfiibE",
+            authDomain: "online-film-club.firebaseapp.com",
+            databaseURL: "https://online-film-club-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "online-film-club",
+            storageBucket: "online-film-club.appspot.com",
+            messagingSenderId: "430279427350",
+            appId: "1:430279427350:web:d92b85b41a79bf11fa3c37"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+
+        import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+
+        var files = [];
+        var reader = new FileReader();
+        var namebox = document.getElementById('namebox');
+        var extlab = document.getElementById('extlab');
+        var myimg = document.getElementById('myimg');
+        var proglab = document.getElementById('upprogress');
+        var SelBtn = document.getElementById('selbtn');
+        var UpBtn = document.getElementById('upbtn');
+        var movieName = document.getElementById('movieName');
+        var desc = document.getElementById('description');
+        var rating = document.getElementById('rating');
+
+        var input = document.createElement('input');
+        input.type = 'file';
+
+        input.onchange = e =>{
+            files = e.target.files;
+            var extention = GetExtName(files[0]);
+            var name = GetFileName(files[0]);
+
+            namebox.value = name;
+            extlab.innerHTML = extention;
+            reader.readAsDataURL(files[0]);
+        }
+
+        reader.onload = function(){
+            myimg.src = reader.result;
+        }
+
+        SelBtn.onclick = function(){
+            input.click();
+        }
+
+        function GetExtName(file){
+            var temp = file.name.split('.');
+            var ext = temp.slice((temp.length-1),(temp.length));
+            return '.' + ext[0];
+        }
+
+        function GetFileName(file){
+            var temp = file.name.split('.');
+            var fname = temp.slice(0,-1).join('.');
+            return fname;'.' + ext[0];
+        }
+
+        async function UploadProcess(){
+            var ImgToUpload = files[0];
+            var ImgName = namebox.value + extlab.innerHTML;
+            const metaData = {
+                contentType:ImgToUpload.type
+            }
+
+            const storage = getStorage();
+            const storageRef = sRef(storage,"Images/" + ImgName);
+            const UploadTask = uploadBytesResumable(storageRef, ImgToUpload, metaData);
+            UploadTask.on('state-change', (snapshot)=>{
+                var progress = (snapshot.bytesTransferred/snapshot.totalBytes) * 100;
+                proglab.innerHTML = "Upload" + progress + "%";
+            },
+            (error)=>{
+                alert("error: image not uploaded!");
+            },
+            ()=>{
+                getDownloadURL(UploadTask.snapshot.ref).then((downloadURL)=>{
+                    SaveURLtoRealtimeDB(downloadURL);
+                })
+            });
+        }
+
+        function SaveURLtoRealtimeDB(URL){
+            var name = namebox.value;
+            var ext = extlab.innerHTML;
+            var mname = movieName.value;
+            var description = desc.value;
+            var r = rating.value;
+
+            set(ref(database, "recommendations/"+mname),{
+                MovieName: mname,
+                Description: description,
+                ImgUrl: URL,
+                rating: r,
+                likes: 0
+            });
+        }
+
+        UpBtn.onclick = UploadProcess;
+
+    </script>
+</body>
+
+</html>

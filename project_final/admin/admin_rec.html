@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background-color: rgba(2, 2, 98, 0.906);
+            margin: 0;
+            /*overflow: hidden;*/
+        }
+
+        .banner {
+            background-color: rgb(106, 0, 106);
+            width: 100%;
+            height: 80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        .login {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .login-icon {
+            font-family: "Font Awesome";
+            font-size: 40px;
+            margin-right: 10px;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+        }
+
+        .box {
+            background-color: rgb(182, 170, 205);
+            width: 92%;
+            height: 360px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            margin-left: 30px;
+            padding: 0 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+
+        .pink-button {
+            background-color: rgba(255, 89, 116, 0.838);
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 50px;
+            margin-left: 30px;
+            margin-right: 30px;
+            margin-top: 10px;
+        }
+
+        .logout-icon {
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        .logout-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+            text-decoration: none;
+        }
+
+        .movie-item {
+            display: inline-block;
+            text-align: center;
+            margin: 10px;
+        }
+
+        .movie-item img {
+            width: 200px;
+            height: 300px;
+        }
+
+        .movie-item h3 {
+            margin-top: 10px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .box {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .movie-item img {
+                width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body>
+    <div class="banner">
+        <div class="login">         
+            <i class="fas fa-user login-icon"></i>
+            <span class="welcome-text" id="welcome">Welcome Admin!</span>
+            
+            <a href="../pages/online_film_club.html" class="logout-button">
+                <img src="../images/logout1.png" alt="Logout" class="logout-icon">
+            </a>
+        </div>
+        <img src="../images/logo-white-transparent.png" alt="Logo" class="logo">
+    </div>
+    <div class="button-container">
+        <a href="admin_upload.html"><button class="pink-button">UPLOAD</button></a>
+        <h1>Movie Recommendation</h1>
+        <a href="admin_month_picked.html"><button class="pink-button">MONTHLY PICK</button></a>
+    </div>
+    <div class="box">
+        <div id="movieRecommendations"></div><!-- Movie recommendations content goes here -->
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, set, ref, update, get, child, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDC9Am3C4GzmMz6htqNIgrR5yuMdFfiibE",
+            authDomain: "online-film-club.firebaseapp.com",
+            databaseURL: "https://online-film-club-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "online-film-club",
+            storageBucket: "online-film-club.appspot.com",
+            messagingSenderId: "430279427350",
+            appId: "1:430279427350:web:d92b85b41a79bf11fa3c37"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(); 
+
+        function getName() {
+            // Get the movie details from Firebase
+            const uid = sessionStorage.getItem('uid');
+            if(uid){
+                console.log(uid);
+            }
+
+            get(ref(database, `users/${uid}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const user = snapshot.val();
+                    const name = document.getElementById('welcome');
+                    name.textContent = "Welcome " + user.username + "!";
+                }
+            });
+        }
+
+        getName();
+
+        function getAllImageUrlsFromRealtimeDB() {
+            // Fetch movie recommendations from Firebase
+            var dbRef = ref(database);
+            var recommendationsRef = child(dbRef, "recommendations");
+
+            get(recommendationsRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    displayMovieRecommendations(snapshot);
+                }
+            });
+        }
+
+        getAllImageUrlsFromRealtimeDB();
+
+        function displayMovieRecommendations(snapshot) {
+            const movieRecommendationsContainer = document.getElementById('movieRecommendations');
+            movieRecommendationsContainer.innerHTML = ''; // Clear the container
+
+            snapshot.forEach((childSnapshot) => {
+                const recommendation = childSnapshot.val();
+                const movieId = childSnapshot.key;
+
+                const movieItem = document.createElement('div');
+                movieItem.classList.add('movie-item');
+
+                const movieImage = document.createElement('img');
+                movieImage.src = recommendation.ImgUrl;
+                movieImage.alt = recommendation.MovieName;
+                movieImage.addEventListener('click', () => handleMovieClick(movieId));
+
+                const movieTitle = document.createElement('h3');
+                movieTitle.textContent = recommendation.MovieName;
+
+                movieItem.appendChild(movieImage);
+                movieItem.appendChild(movieTitle);
+                movieRecommendationsContainer.appendChild(movieItem);
+            });
+        }
+
+        function handleMovieClick(movieId) {
+            // Redirect to the movie details page with the movieId
+            window.location.href = `admin_movie_details.html?id=${movieId}`;
+        }
+
+    </script>
+</body>
+
+</html>

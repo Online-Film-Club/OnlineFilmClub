@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background-color: rgba(2, 2, 98, 0.906);
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .banner {
+            background-color: rgb(106, 0, 106);
+            width: 100%;
+            height: 80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        .login {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .login-icon {
+            font-family: "Font Awesome";
+            font-size: 40px;
+            margin-right: 10px;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+        }
+
+        .box {
+            background-color: rgb(182, 170, 205);
+            width: 92%;
+            height: 360px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            margin-left: 30px;
+            padding: 0 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .pink-button {
+            background-color: rgba(255, 89, 116, 0.838);
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 50px;
+            margin-left: 30px;
+            margin-right: 30px;
+            margin-top: 10px;
+        }
+
+        .logout-icon {
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        .logout-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+            text-decoration: none;
+        }
+
+        .movie-details-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .movie-image {
+            width: 200px;
+            height: 300px;
+            margin-right: 20px;
+        }
+
+        .movie-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .movie-description {
+            font-size: 16px;
+            text-align: justify;
+            margin-right: 500px;
+        }
+
+        .rating-container {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .star {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .rated {
+            color: gold;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body>
+    <div class="banner">
+        <div class="login">
+            <a href="profile_page.html" style="color: white;">
+            <i class="fas fa-user login-icon"></i>
+            </a>
+            <span class="welcome-text" id="welcome">Welcome User!</span>
+            <a href="online_film_club.html" class="logout-button">
+                <img src="../images/logout1.png" alt="Logout" class="logout-icon">
+            </a>
+        </div>
+        <img src="../images/logo-white-transparent.png" alt="Logo" class="logo">
+    </div>
+    <div class="button-container">
+        <a href="movie_rec.html"><button class="pink-button">MOVIE RECOMMENDATION</button></a>
+        <h1>Our Monthly Pick</h1>
+        <a href="discussion_forum.html"><button class="pink-button">DISCUSSION FORUM</button></a>
+    </div>
+    <div class="box">
+        <div class="movie-details-container">
+            <img id="movieImage" class="movie-image" src="" alt="">
+            <div class="movie-info">
+                <h2 id="movieTitle" class="movie-title"></h2>
+                <p id="movieDescription" class="movie-description"></p>
+                <div class="rating-container" data-movie-id="${movieId}">
+                    <span class="star" data-rating="1">&#9733;</span>
+                    <span class="star" data-rating="2">&#9733;</span>
+                    <span class="star" data-rating="3">&#9733;</span>
+                    <span class="star" data-rating="4">&#9733;</span>
+                    <span class="star" data-rating="5">&#9733;</span>
+                </div>
+                <p>Total Likes: <span id="totalLikes">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, set, ref, update, get, child, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDC9Am3C4GzmMz6htqNIgrR5yuMdFfiibE",
+            authDomain: "online-film-club.firebaseapp.com",
+            databaseURL: "https://online-film-club-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "online-film-club",
+            storageBucket: "online-film-club.appspot.com",
+            messagingSenderId: "430279427350",
+            appId: "1:430279427350:web:d92b85b41a79bf11fa3c37"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+
+        function getName() {
+            // Get the movie details from Firebase
+            const uid = sessionStorage.getItem('uid');
+            if (uid) {
+                console.log(uid);
+            }
+
+            get(ref(database, `users/${uid}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const user = snapshot.val();
+                    const name = document.getElementById('welcome');
+                    name.textContent = "Welcome " + user.username + "!";
+                }
+            });
+        }
+
+        getName();
+
+        function getAllImageUrlsFromRealtimeDB() {
+            // Fetch movie recommendations from Firebase
+            var dbRef = ref(database);
+            var recommendationsRef = child(dbRef, "monthlyPicked");
+
+            get(recommendationsRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    displayMovieRecommendations(snapshot);
+                }
+            });
+        }
+
+        getAllImageUrlsFromRealtimeDB();
+
+        function displayMovieRecommendations(snapshot) {
+            const movieRecommendationsContainer = document.getElementById('movie-details-container');
+            //movieRecommendationsContainer.innerHTML = ''; // Clear the container
+            // Get the thumbs-up button and total likes element
+            const totalLikesElement = document.getElementById('totalLikes');
+
+            snapshot.forEach((childSnapshot) => {
+                const movie = childSnapshot.val();
+                const movieId = childSnapshot.key;
+
+                const movieImage = document.getElementById('movieImage');
+                const movieTitle = document.getElementById('movieTitle');
+                const movieDescription = document.getElementById('movieDescription');
+                console.log(movie.MovieName);
+                movieImage.src = movie.ImgUrl;
+                movieTitle.textContent = movie.MovieName;
+                movieDescription.textContent = movie.Description;
+                const rating = movie.rating;
+                totalLikesElement.textContent = movie.likes;
+
+                // Display the rating stars based on the rating value
+                const ratingContainer = document.querySelector('.rating-container');
+                const stars = ratingContainer.querySelectorAll('.star');
+
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add('rated');
+                    } else {
+                        star.classList.remove('rated');
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .logo {
+            position: absolute;
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: rgba(2, 2, 98, 0.906);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        form {
+            border: 3px solid white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            background-color: white;
+            margin-top: 50px;
+        }
+
+        input[type=text],
+        input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: rgba(255, 89, 116, 0.838);
+            color: black;
+            padding: 14px 20px;
+            margin: 8px auto;
+            display: block;
+            border: none;
+            cursor: pointer;
+            width: 30%;
+            border-radius: 10px;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .imgcontainer {
+            text-align: center;
+            margin: 24px 0 12px 0;
+        }
+
+        img.avatar {
+            width: 20%;
+            border-radius: 20%;
+            size: 50px;
+        }
+
+        .container {
+            padding: 8px;
+            text-align: center;
+        }
+
+        @media screen and (max-width: 600px) {
+            form {
+                width: 90%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <img src="../images/logo-white-transparent.png" alt="Logo" class="logo">
+
+    <form action="" method="post">
+        <div class="imgcontainer">
+            <img src="../images/profileicon.png" alt="Avatar" class="avatar">
+        </div>
+
+        <div class="container">
+            <label for="email"><b>Email</b></label>
+            <input type="text" placeholder="Enter Email" id="email" required>
+
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" id="psw" required>
+
+            <button type="submit" id="login">Login</button>
+        </div>
+
+        <div class="container">
+            <p>No account? <a href="signup_page.html">Click here to sign up.</a></p>
+        </div>
+    </form>
+
+</body>
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getDatabase, set, ref, update, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDC9Am3C4GzmMz6htqNIgrR5yuMdFfiibE",
+        authDomain: "online-film-club.firebaseapp.com",
+        databaseURL: "https://online-film-club-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "online-film-club",
+        storageBucket: "online-film-club.appspot.com",
+        messagingSenderId: "430279427350",
+        appId: "1:430279427350:web:d92b85b41a79bf11fa3c37"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth();
+
+    const login = document.getElementById('login');
+
+    login.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('psw').value;
+
+        if(email === "chialiang@graduate.utm.my"){
+            var redirectUrl = "../admin/admin_rec.html";
+        }
+        else{
+            var redirectUrl = "movie_rec.html";
+        }
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+
+                const dt = new Date();
+                update(ref(database, 'users/' + user.uid), {
+                    last_login: dt,
+                })
+
+                // Store the login details in session storage
+                sessionStorage.setItem('email', email);
+                sessionStorage.setItem('uid', user.uid);
+
+                // Redirect to the desired page
+                window.location.href = redirectUrl;
+
+                alert('User logged in!');
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+
+                alert(errorMessage);
+            });
+    });
+
+    const user = auth.currentUser;
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            const uid = user.uid;
+        }
+        else {
+
+        }
+    });
+
+    // const logout = document.getElementById('logout');
+
+    // logout.addEventListener('click', (e) => {
+    //     signOut(auth).then(() => {
+    //         alert('user logged out');
+    //         window.location.replace('login_page.html');
+    //     }).catch((error) => {
+    //         const errorCode = error.code;
+    //         const errorMessage = error.message;
+    //         alert(errorMessage);
+    //     })
+    // })
+
+</script>
+
+</html>

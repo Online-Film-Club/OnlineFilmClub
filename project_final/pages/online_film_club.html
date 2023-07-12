@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background-color: rgba(2, 2, 98, 0.906);
+            margin: 0;
+        }
+
+        .logo {
+            position: absolute;
+            width: 300px;
+            height: auto;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-top: 150px;
+        }
+
+        .icon-background {
+            position: absolute;
+            top: 100;
+            left: 50%;
+            transform: translateX(-50%);
+            border: none;
+            border-radius: 40px;
+        }
+
+        .icon-popcorn {
+            height: 90px;
+            position: absolute;
+            top: 250px;
+            left: 30%;
+            transform: translateX(-50%);
+            border: none;
+        }
+
+        .icon-red-carpet {
+            height: 90px;
+            position: absolute;
+            top: 250px;
+            left: 52%;
+            transform: translateX(-50%);
+            border: none;
+        }
+
+        .icon-discuss {
+            height: 90px;
+            position: absolute;
+            top: 250px;
+            left: 73%;
+            transform: translateX(-50%);
+            border: none;
+        }
+
+        .text-link {
+            position: absolute;
+            color: white;
+            text-align: center;
+            font-size: 20px;
+            text-decoration: none;
+        }
+
+        #link1 {
+            top: 350px;
+            left: 22%;
+        }
+
+        #link2 {
+            top: 350px;
+            left: 44%;
+        }
+
+        #link3 {
+            top: 350px;
+            left: 67%;
+        }
+
+        .sign-up-link {
+            position: absolute;
+            top: 20px;
+            right: 55px;
+            color: white;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        .icon-sign-up {
+            height: 20px;
+            position: absolute;
+            top: 19px;
+            right: 20px;
+            transform: translateX(-50%);
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="../images/logo-white-transparent.png" alt="Logo" class="logo">
+
+    <h1>A Movie Fan? Join Our Community</h1>
+
+    <img src="../images/film.jpg" alt="icon-background" class="icon-background">
+    <img src="../images/popcorn.png" alt="popcorn" class="icon-popcorn">
+    <img src="../images/red-carpet.png" alt="red-carpet" class="icon-red-carpet">
+    <img src="../images/discuss.png" alt="discuss" class="icon-discuss">
+    <a href="movie_rec.html" class="text-link" id="link1">Movie Recommendation</a>
+    <a href="monthly_film.html" class="text-link" id="link2">Monthly Film Club Picks</a>
+    <a href="discussion_forum.html" class="text-link" id="link3">Discussion Forum</a>
+    <a href="login_page.html" class="sign-up-link">Sign Up/Log In</a>
+    <img src="../images/sign-up.png" alt="sign-up" class="icon-sign-up">
+</body>
+
+<script>
+    // Get the query parameters from the URL
+    const queryParams = new URLSearchParams(window.location.search);
+
+    // Retrieve the login details from the query parameters
+    const email = queryParams.get('email');
+    const uid = queryParams.get('uid');
+</script>
+
+</html>
